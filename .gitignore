@@ -1,3 +1,2 @@
-Resources/Sky/StellarData.txt
-Resources/Sky/StellarData.txt.meta
-Stars/BakedStars/
+Resources/Sky/StellarData*
+Stars/BakedStars/*
