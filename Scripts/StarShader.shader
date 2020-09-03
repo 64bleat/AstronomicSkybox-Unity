@@ -26,6 +26,7 @@
 		float _Scale;
 		float _Mult;
 	ENDCG
+
 	SubShader
 	{
 		Tags{"Queue" = "Transparent" "RenderType" = "Transparent"}
@@ -36,18 +37,20 @@
 			CGPROGRAM
 				#pragma vertex vert  
 				#pragma fragment frag 
+
+				//Special info encoded in vertex color
 				#define r_Magnitude r
 				#define g_Luminance g
 				#define b_ColorIndex b
 
-				struct appdata_full 
+				struct appdata
 				{
 					float4 vertex : POSITION;
-					float4 texcoord : TEXCOORD0;
-					fixed4 colorData : COLOR;
+					float4 uv : TEXCOORD0;
+					fixed4 cInfo : COLOR;
 				};
 
-				struct vertexOutput 
+				struct v2f 
 				{
 					float4 pos : SV_POSITION;
 					float4 col : COLOR;
@@ -55,47 +58,47 @@
 					half uvMag : TEXCOORD1;
 				};
 
-				vertexOutput vert(appdata_full input)
+				v2f vert(appdata input)
 				{
-					vertexOutput output;
+					v2f o;
 
-					output.pos = UnityObjectToClipPos(input.vertex);
+					o.pos = UnityObjectToClipPos(input.vertex);
 
 					// UV
-					output.uv = input.texcoord;
-					output.uvMag = input.colorData.r_Magnitude;
+					o.uv = input.uv;
+					o.uvMag = input.cInfo.r_Magnitude;
 
 					// Base Color
-					float shift = pow(abs(input.colorData.b_ColorIndex - 0.5) * 2.0, _ShiftExp);
-					if(input.colorData.b_ColorIndex < 0.5)
-						output.col = lerp(_Color, _BlueShift, shift);
+					float shift = pow(abs(input.cInfo.b_ColorIndex - 0.5) * 2.0, _ShiftExp);
+					if(input.cInfo.b_ColorIndex < 0.5)
+						o.col = lerp(_Color, _BlueShift, shift);
 					else
-						output.col = lerp(_Color, _RedShift, shift);
+						o.col = lerp(_Color, _RedShift, shift);
 				
 					// Brightness
-					output.col *= pow(input.colorData.g_Luminance, _LuminosityExp);
+					o.col *= pow(input.cInfo.g_Luminance, _LuminosityExp);
 
 					// Scale and Power
-					output.col = pow(output.col * _ColorScale, _ColorPower);
+					o.col = pow(o.col * _ColorScale, _ColorPower);
 
 					// Non-Negative
-					output.col = max(output.col, float4(0,0,0,0));
+					o.col = max(o.col, float4(0,0,0,0));
 
 					// Lower Clamp
-					output.col = (max(output.col - _Scale, float4(0,0,0,0))) * _Scale;
+					o.col = (max(o.col - _Scale, float4(0,0,0,0))) * _Scale;
 
 					// Upper Clamp
-					output.col = min(output.col, float4(_LimitBrightness,_LimitBrightness,_LimitBrightness,1));
+					o.col = min(o.col, float4(_LimitBrightness,_LimitBrightness,_LimitBrightness,1));
 
 					// Multiplier
-					output.col *= _Mult;
+					o.col *= _Mult;
 
-					return output;
+					return o;
 				}
 
-				float4 frag(vertexOutput input) : COLOR
+				float4 frag(v2f input) : COLOR
 				{
-					float d = distance(float2(input.uv.x, input.uv.y), float2(0.5, 0.5));
+					float d = length(input.uv.xy - 0.5);
 
 					if(d > 0.5)
 						discard;
