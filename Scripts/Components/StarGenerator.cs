@@ -59,17 +59,19 @@ namespace Astronomy
             // Initialization
             StarData[] sData = StarLoader.LoadStarData(starDataPath);
             ConstellationData[] cData = StarLoader.LoadConstellationData(constellationDataPath);
+            Mesh[] meshes = GenerateStarMeshes(sData, starScale, starDistance);
+            int meshLen = meshes.Length;
 
             RemoveGeneratedItems();
 
             // Generate stars
-            foreach (Mesh mesh in GenerateStarMeshes(sData, starScale, starDistance))
+            for(int m = 0; m < meshLen; m++)
             {
                 MeshRenderer mr = Instantiate(starMeshTemplate, starContainerPrefab, false);
                 MeshFilter mf = mr.GetComponent<MeshFilter>();
-                mf.sharedMesh = mesh;
+                mf.sharedMesh = meshes[m];
                 mr.sharedMaterial = starMaterial;
-                mr.gameObject.name = mesh.name;
+                mr.gameObject.name = meshes[m].name;
             }
 
             GenerateConstellations(sData, cData);
@@ -79,9 +81,12 @@ namespace Astronomy
         /// <summary> removes existing generated GameObjects </summary>
         private void RemoveGeneratedItems()
         {
-            foreach (Transform child in starContainerPrefab.GetComponentsInChildren<Transform>())
-                if (child != null && child != starContainerPrefab)
-                    DestroyImmediate(child.gameObject);
+            Transform[] childs = starContainerPrefab.GetComponentsInChildren<Transform>();
+            int childLen = childs.Length;
+
+            for(int c = 0; c < childLen; c++)
+                if (childs[c] && childs[c] != starContainerPrefab)
+                    DestroyImmediate(childs[c].gameObject);
         }
 
         /// <summary> 
@@ -94,13 +99,15 @@ namespace Astronomy
         /// <returns> an array of star meshes </returns>
         private static Mesh[] GenerateStarMeshes(StarData[] stars, float starScale = 0.2f, float starDistance = 15f)
         {
+            int starLen = stars.Length;
             int starCount = 10000;
             Vector3 starOffset = new Vector3(0, 0, starDistance);
             Mesh[] meshes = new Mesh[Mathf.CeilToInt((float)stars.Length / starCount)];
             RawVert[] rawVerts = new RawVert[stars.Length * 4];
+            Vector3[] quadVerts = new Vector3[4];
 
             // Generate raw mesh data
-            for(int s = 0; s < stars.Length; s++)
+            for(int s = 0; s < starLen; s++)
             {
                 float quadScale = starScale * Mathf.Max(0.25f, Mathf.Pow(Mathf.Pow(stars[s].lum, 0.125f), 2));
                 Quaternion quadCoordinates = Quaternion.Euler(stars[s].dec, stars[s].ra, 0);
@@ -109,11 +116,11 @@ namespace Astronomy
                     Mathf.Clamp01(stars[s].mag),
                     Mathf.Clamp01(stars[s].lum),
                     Mathf.Clamp01(stars[s].ci));
-                Vector3[] quadVerts = new Vector3[]{
-                    quadCoordinates * Quaternion.Euler( quadScale,  quadScale, 0) * starOffset,
-                    quadCoordinates * Quaternion.Euler(-quadScale,  quadScale, 0) * starOffset,
-                    quadCoordinates * Quaternion.Euler(-quadScale, -quadScale, 0) * starOffset,
-                    quadCoordinates * Quaternion.Euler( quadScale, -quadScale, 0) * starOffset};
+
+                quadVerts[0] = quadCoordinates * Quaternion.Euler( quadScale,  quadScale, 0) * starOffset;
+                quadVerts[1] = quadCoordinates * Quaternion.Euler(-quadScale,  quadScale, 0) * starOffset;
+                quadVerts[2] = quadCoordinates * Quaternion.Euler(-quadScale, -quadScale, 0) * starOffset;
+                quadVerts[3] = quadCoordinates * Quaternion.Euler( quadScale, -quadScale, 0) * starOffset;
 
                 // Vertices
                 for(int v = s * 4, e = v + 4; v < e; v++)
@@ -126,38 +133,47 @@ namespace Astronomy
             }
 
             //Generate final meshes
+            int vertexCount = starCount * 4;
+            int triCount = starCount * 6;
+            List<Vector3> mVertices = new List<Vector3>(vertexCount);
+            List<Vector3> mNormals = new List<Vector3>(vertexCount);
+            List<Vector2> mUV = new List<Vector2>(vertexCount);
+            List<Color> mColor = new List<Color>(vertexCount);
+            List<int> mTriangles = new List<int>(triCount);
+
             for(int m = 0; m < meshes.Length; m++)
             {
-                int rStart = m * starCount * 4;
-                int rEnd = Mathf.Min(rawVerts.Length, rStart + starCount * 4);
+                int rStart = m * vertexCount;
+                int rEnd = Mathf.Min(rawVerts.Length, rStart + vertexCount);
                 int rLength = rEnd - rStart;
-                Vector3[] mVertices = new Vector3[rLength];
-                Vector3[] mNormals = new Vector3[rLength];
-                Vector2[] mUV = new Vector2[rLength];
-                Color[] mColor = new Color[rLength];
-                int[] mTriangles = new int[rLength / 4 * 6];
-
+                int triLength = rLength / 4 * 6;
+                mVertices.Clear();
+                mNormals.Clear();
+                mUV.Clear();
+                mColor.Clear();
+                mTriangles.Clear();
+              
                 // Verteces
-                for (int v = 0; v < rLength; v++)
+                for (int v = rStart; v < rEnd; v++)
                 {
-                    mVertices[v] = rawVerts[rStart + v].vertex;
-                    mNormals[v] = rawVerts[rStart + v].normal;
-                    mUV[v] = rawVerts[rStart + v].uv;
-                    mColor[v] = rawVerts[rStart + v].color;
+                    mVertices.Add(rawVerts[v].vertex);
+                    mNormals.Add(rawVerts[v].normal);
+                    mUV.Add(rawVerts[v].uv);
+                    mColor.Add(rawVerts[v].color);
                 }
 
                 // Triangles
-                for (int t = 0; t < mTriangles.Length; t++)
-                    mTriangles[t] = t / 6 * 4 + tQuad[t % 6];
+                for (int t = 0; t < triLength; t++)
+                    mTriangles.Add(t / 6 * 4 + tQuad[t % 6]);
 
                 // Meshes
                 meshes[m] = new Mesh() {
                     name = "StarMesh" + m,
-                    vertices = mVertices,
-                    normals = mNormals,
-                    uv = mUV,
-                    colors = mColor,
-                    triangles = mTriangles
+                    vertices = mVertices.ToArray(),
+                    normals = mNormals.ToArray(),
+                    uv = mUV.ToArray(),
+                    colors = mColor.ToArray(),
+                    triangles = mTriangles.ToArray()
                 };
 
                 meshes[m].RecalculateBounds();

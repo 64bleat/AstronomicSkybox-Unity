@@ -1,8 +1,9 @@
 # Astronomic Skybox
- Realtime, true-to-life, star and sky simulator for Unity. Perfect for recreating real-world places, time lapse effects, impressive day/night cycles, or just stargazing!
+Realtime, true-to-life, star and sky simulator for Unity. Perfect for recreating real-world places, time lapse effects, impressive day/night cycles, or just stargazing!
 
-![Example 1](Info/ex1.jpg)
-![Example 2](Info/ex2.jpg)
+![Example 1](.github/ex1.jpg)
+
+![Example 2](.github/ex2.jpg)
 
 ## How it works
 * The **skybox** is the bread and butter of this package. Its goal is to simulate the sky as accurately as possible

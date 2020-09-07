@@ -2,6 +2,7 @@
 using UnityEngine;
 using SHK.Tools;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 namespace Astronomy
 {
@@ -25,6 +26,8 @@ namespace Astronomy
         public float ambientIntensity = 0.02f;
         public Color dayColor = new Color(1, 1, 1);
         public Color duskColor = new Color(1f, 0.9f, 0.8f);
+        public Color dayFogColor;
+        public Color nightFogColor;
         [Header("Location")]
         public float latitude = 48f;
         public float longitude = -122f;
@@ -74,8 +77,11 @@ namespace Astronomy
                 else
                     sunBrightness *= 0;
 
-                sunLight.color = Color.Lerp(duskColor, dayColor, sunBrightness / sunIntensity);
+                sunLight.color = Color.Lerp(duskColor, dayColor, Mathf.Clamp01(sunBrightness / 0.5f));
                 sunLight.intensity = sunBrightness;
+
+                if (RenderSettings.fog)
+                    RenderSettings.fogColor = Color.Lerp(nightFogColor, dayFogColor, Mathf.Clamp01(sunBrightness / 0.5f));
 
                 // Moonlight
                 if (moonLight)
