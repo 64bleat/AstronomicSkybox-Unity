@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 392768b024ab3c449a837d6e965a04b6
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - starContainerPrefab: {instanceID: 0}
+  - starMeshTemplate: {fileID: 6762098461529984356, guid: 3cf413f68a4f8fa47a3f5d9854e47f47,
+      type: 3}
+  - starMaterial: {fileID: 2100000, guid: 41685ff941edb7b4e9ac20129360aeb7, type: 2}
+  - constellationTemplate: {fileID: 7230116189989001648, guid: 4e97b1e31ed4f0640b1203967e04205f,
+      type: 3}
+  - constellationLineTemplate: {fileID: 2160586462572462258, guid: 58969390c2a6a6e43a2eeb7169c3e8c1,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

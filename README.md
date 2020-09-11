@@ -17,18 +17,4 @@ Realtime, true-to-life, star and sky simulator for Unity. Perfect for recreating
 *  **StarGenerator.cs** generates stars and constellations for the skybox.
 *  **StarMath.cs** contains a bunch of methods for converting coordinate systems and calculating the position of the sun and moon.
 
-## Getting it running
-* **Add to Unity project**
-  * Add the repository directly to a folder in your Unity project.
-* **Download star data**
-  * Download [**this star data file**](https://github.com/astronexus/HYG-Database/blob/master/hygdata_v3.csv) and set it to ``` Resources/Sky/StellarData.txt```.
-* **Handle missing Time Manager**
-  * The TimeManager system currently isn't on github. In ```StarPositioner.cs``` replace ```TimeManager.CurrentUniversalTime``` with ```DateTime.UtcNow``` or handle time in some other way.
-* **Implement inside a scene**
-  * Place ```Assets/Templates/BlankSkybox``` inside your scene.
-  * Set the new instance to a layer visible to your skybox camera and move it out of the way.
-  * On the skybox, set the StarPositioner latitude and logitude to the point on Earth you want to simulate.
-  * Provided you downloaded the star data, clicking **Generate Stars** will add star meshes and constellations to your skybox
-    * It's a good idea to save the skybox with the new generated assets to a new prefab.
-  * The skybox will automatically reorient to whatever DateTime it is provided with.
-  * Good to go!
+[stellarData.txt is sourced from astronexus/HYG-Database](https://github.com/astronexus/HYG-Database/blob/master/hygdata_v3.csv)

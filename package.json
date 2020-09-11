@@ -1,0 +1,19 @@
+{
+  "name": "com.64bleat.astronomy",
+  "version": "0.1.0",
+  "displayName": "Astronomy",
+  "description": "A true-to-life, time-based skybox simulation.",
+  "unity": "2020.1",
+  "unityRelease": "5f1",
+  "keywords": [
+    "skybox",
+    "astronomy",
+    "stars",
+    "procedural"
+  ],
+  "author": {
+    "name": "64bleat",
+    "email": "64bleat@gmail.com",
+    "url": "https://github.com/64bleat/AstronomicSkybox-Unity"
+  }
+}
