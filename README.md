@@ -5,6 +5,8 @@ Realtime, true-to-life, star and sky simulator for Unity. Perfect for recreating
 
 ![Example 2](.github/ex2.jpg)
 
+## [Install through Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html)
+
 ## How it works
 * The **skybox** is the bread and butter of this package. Its goal is to simulate the sky as accurately as possible
   * Supports three celestial coordinate systems
