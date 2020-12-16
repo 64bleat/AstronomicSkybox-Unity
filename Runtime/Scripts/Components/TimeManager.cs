@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Astronomy
@@ -16,6 +15,7 @@ namespace Astronomy
         public float timeScale = 1;
         public bool isRealtime = true;
         public DateTimeInspector startDate;
+
         public static DateTime currentTime = new DateTime();
         public static DateTime CurrentUniversalTime => currentTime.ToUniversalTime();
 
@@ -37,6 +37,8 @@ namespace Astronomy
                 SetCurrentTime(DateTime.Now);
             else
                 SetCurrentTime(startDate);
+
+            viewVurrentTime = currentTime.ToLongTimeString();
         }
 
         private void Awake()
@@ -53,10 +55,10 @@ namespace Astronomy
 
         }
 
-        public DateTime SetCurrentTime(DateTime t)
+        public static DateTime SetCurrentTime(DateTime t)
         {
             currentTime = t;
-            viewVurrentTime = currentTime.ToLongTimeString();
+
             return currentTime;
         }
     }
