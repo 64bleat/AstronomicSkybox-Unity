@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Astronomy
 {
-    [ExecuteInEditMode]
     public class StarPositioner : MonoBehaviour
     {
         [Header("Rotators")]
