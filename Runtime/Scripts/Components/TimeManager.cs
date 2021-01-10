@@ -12,11 +12,12 @@ namespace Astronomy
     public class TimeManager : MonoBehaviour
     {
         public string viewVurrentTime;
-        public float timeScale = 1;
+
         public bool isRealtime = true;
         public DateTimeInspector startDate;
 
         public static DateTime currentTime = new DateTime();
+        public static float timeScale = 1;
         public static DateTime CurrentUniversalTime => currentTime.ToUniversalTime();
 
         [System.Serializable]
