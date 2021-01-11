@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Astronomy
 {
@@ -8,59 +9,44 @@ namespace Astronomy
     /// <summary>
     /// Manage game time and schedule Actions to pe taken at certain times.
     /// </summary>
-    [ExecuteInEditMode]
     public class TimeManager : MonoBehaviour
     {
-        public string viewVurrentTime;
-
-        public bool isRealtime = true;
-        public DateTimeInspector startDate;
+        public string startTime;
+        public bool startAtRealTime = true;
+        public float initialTimeScale = 1f;
 
         public static DateTime currentTime = new DateTime();
-        public static float timeScale = 1;
-        public static DateTime CurrentUniversalTime => currentTime.ToUniversalTime();
-
-        [System.Serializable]
-        public struct DateTimeInspector
-        {
-            public int year;
-            public int month;
-            public int day;
-            public float hour;
-
-            public static implicit operator DateTime(DateTimeInspector d)
-                => new DateTime(d.year, d.month, d.day).AddHours(d.hour);
-        }
+        public static float timeScale = 1f;
 
         private void OnValidate()
         {
-            if (isRealtime)
-                SetCurrentTime(DateTime.Now);
-            else
-                SetCurrentTime(startDate);
+            if (!startAtRealTime)
+            {
+                if (!DateTime.TryParse(startTime, out DateTime result))
+                    result = DateTime.Now;
 
-            viewVurrentTime = currentTime.ToLongTimeString();
+                currentTime = result;
+                startTime = result.ToString("s");
+            }
         }
 
         private void Awake()
         {
-            if (isRealtime)
-                SetCurrentTime(DateTime.Now);
-            else
-                SetCurrentTime(startDate);
+            if (startAtRealTime || !DateTime.TryParse(startTime, out DateTime result))
+                result = DateTime.Now;
+
+            currentTime = result;
+            timeScale = initialTimeScale;
         }
 
         private void Update()
         {
-            SetCurrentTime(currentTime.AddSeconds(Time.deltaTime * timeScale));
-
+            currentTime = currentTime.AddSeconds(Time.deltaTime * timeScale);
         }
 
-        public static DateTime SetCurrentTime(DateTime t)
+        public static void SetCurrentTime(DateTime t)
         {
             currentTime = t;
-
-            return currentTime;
         }
     }
 }

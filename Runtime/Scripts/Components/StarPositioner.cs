@@ -32,17 +32,17 @@ namespace Astronomy
 
         private void OnValidate()
         {
-            SetSky(lastTime = TimeManager.CurrentUniversalTime);
+            SetSky(lastTime = TimeManager.currentTime.ToUniversalTime());
         }
 
         private void Awake()
         {
-            SetSky(lastTime = TimeManager.CurrentUniversalTime);
+            SetSky(lastTime = TimeManager.currentTime.ToUniversalTime());
         }
 
         private void Update()
         {
-            DateTime sampleTime = TimeManager.CurrentUniversalTime;
+            DateTime sampleTime = TimeManager.currentTime.ToUniversalTime();
 
             if(lastTime != sampleTime)
                 SetSky(lastTime = sampleTime);
